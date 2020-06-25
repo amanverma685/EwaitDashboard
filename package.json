@@ -5,11 +5,28 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "export": "next export"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.29",
+    "@fortawesome/free-solid-svg-icons": "^5.13.1",
+    "@fortawesome/react-fontawesome": "^0.1.11",
     "next": "9.3.6",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-data-table-component": "^6.9.3",
+    "react-dom": "16.13.1",
+    "react-loader": "^2.4.7",
+    "react-select": "^3.1.0",
+    "react-spinners": "^0.8.3",
+    "react-super-responsive-table": "^5.1.1",
+    "styled-components": "^5.1.1",
+    "sweetalert2": "^9.13.1",
+    "sweetalert2-react-content": "^3.0.1"
+  },
+  "devDependencies": {
+    "postcss-font-magician": "^2.3.1",
+    "postcss-preset-env": "^6.7.0",
+    "tailwindcss": "^1.4.6"
   }
 }

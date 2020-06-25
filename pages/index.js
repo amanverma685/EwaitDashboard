@@ -1,209 +1,205 @@
-import Head from 'next/head'
+import React, { Component } from "react";
+import Main from "../component/Main";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPhoneSquare } from "@fortawesome/free-solid-svg-icons";
 
-export default function Home() {
-  return (
-    <div className="container">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+export default class index extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      row: [],
+      isPageLoading: false,
+      language: "eng",
+    };
+  }
+  async componentDidMount() {
+    this.setState({ isPageLoading: true });
+    try {
+      const response = await fetch(
+        "https://v12qe1f1jf.execute-api.us-east-1.amazonaws.com/Dev/get-all-data",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const responseJson = await response.json();
+      console.log(responseJson);
+      const newData = [];
+      responseJson.responseData?.forEach((element) => {
+        newData.push({
+          name: element?.name,
+          arrived: element?.arrived,
+          PhoneNo: element?.PhoneNo,
+          dateTime: element?.dateTime
+        });
+        // if (element.arrived == "Yes") {
+        //   window.alert("The patient has Arrived");
+        // }
+      });
+      this.setState({ row: newData }, () => {
+        console.log("Row", this.state.row);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    this.setState({ isPageLoading: false });
+  }
+  render() {
+    return (
+      <Main isLoading={this.state.isPageLoading}>
+        <div className="w-full md:w-3/4 mx-auto">
+          <div className="bg-blue-900 w-full p-4 ">
+            <label className="font-semibold font-montserrat text-xl text-white ">
+              Patient Arrival Dashboard
+            </label>
+          </div>
+          <div className="grid grid-cols-8">
+            <div className="col-span-2 border text-center py-4">
+              <label className="font-montserrat md:text-lg font-semibold">
+                Patient
+              </label>
+            </div>
+            <div className="col-span-2 border text-center py-4">
+              <label className="font-montserrat text-lg font-semibold">
+                Appointment Time
+              </label>
+            </div>
+            <div className="col-span-4 border text-center py-1">
+              <label className="font-montserrat text-lg font-semibold">
+                Status
+              </label>
+              <div className="grid grid-cols-4 border-t">
+                <div className="col-span-1 border-r font-montserrat font-semibold pt-3">
+                  Arrived (Y/N)
+                </div>
+                <div className="col-span-1 border-r font-montserrat font-semibold pt-3">
+                  Signed In (Y/N)
+                </div>
+                <div className="col-span-1 border-r font-montserrat font-semibold ">
+                  Checking In (Waiting/IN)
+                </div>
+                <div className="col-span-1 font-montserrat font-semibold my-auto">
+                  In With DOC/HYG
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            {this.state.row.map((item, index) => {
+              return (
+                <div className="grid grid-cols-8" key={index}>
+                  <div
+                    className={
+                      "col-span-2 border text-center pt-2" +
+                      (item.arrived === "Yes" && " bg-green-500")
+                    }
+                  >
+                    <label className="font-semibold font-montserrat">
+                      {item.name}
+                    </label>
+                  </div>
+                  <div
+                    className={
+                      "col-span-2 border text-center pt-2" +
+                      (item.arrived === "Yes" && " bg-green-500")
+                    }
+                  >
+                    <label>{item.dateTime}</label>
+                  </div>
 
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+                  <div
+                    className={
+                      "col-span-1 border text-center pt-2" +
+                      (item.arrived === "Yes" && " bg-green-500")
+                    }
+                  ><select>
+                    <option value={item.arrived}>{item.arrived}</option>
+                    <option value="withdoctor">With Doctor</option>
+                  </select>
+                  </div>
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/zeit/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+                  <div
+                    className={
+                      "col-span-1 border text-center pt-2" +
+                      (item.arrived === "Yes" && " bg-green-500")                    }
+                  >
+                    Yes
+                  </div>
+                  <div
+                    className={
+                      "col-span-1 border text-center pt-2" +
+                      (item.arrived === "Yes" && " bg-green-500")
+                    }
+                  >
+                    Waiting to be called
+                    <a href={"tel:" + item.PhoneNo}>
+                      <FontAwesomeIcon
+                        icon={faPhoneSquare}
+                        size="2x"
+                        className="cursor-pointer mr-6"
+                      ></FontAwesomeIcon>
+                    </a>
+                  </div>
+                  <div className="col-span-1 border text-center pt-2">
+                    With Hygienist (casey)
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div></div>
+          {/* {this.state.language === "eng" && (
+            <div className="">
+              <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+              <df-messenger
+                intent="WELCOME"
+                chat-title="DentalBot"
+                agent-id="fc6efb50-7c8a-4c34-a756-dcd49395a458"
+                language-code="en"
+              ></df-messenger>
+            </div>
+          )} */}
+          {/* {this.state.language === "spain" && (
+            <div className="">
+              <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+              <df-messenger
+                intent="WELCOME"
+                chat-title="DentalBot"
+                agent-id="fc6efb50-7c8a-4c34-a756-dcd49395a458"
+                language-code="es"
+              ></df-messenger>
+            </div>
+          )} */}
+          {/* <div className="w-56 pt-8 float-right">
+            <Select
+              name="Language"
+              onNewValue={(res) =>
+                this.setState({
+                  language: res.value,
+                })
+              }
+              onError={(error) =>
+                this.setState({
+                  errorlanguage: error,
+                })
+              }
+              defaultValue={this.state.language}
+              options={[
+                {
+                  value: "spain",
+                  label: "Spainish",
+                },
+                {
+                  value: "eng",
+                  label: "English",
+                },
+              ]}
+            />
+          </div> */}
         </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
-  )
+      </Main>
+    );
+  }
 }
